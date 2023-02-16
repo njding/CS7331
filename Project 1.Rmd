@@ -19,6 +19,7 @@ library("ggplot2")
 library("ggrepel")
 library("ggcorrplot")
 library("DT")
+library("dplyr")
 ```
 
 ```{r}
@@ -28,6 +29,29 @@ cases <- read_csv("COVID-19_cases_plus_census.csv")
 cases
 ```
 ```{r}
-
+cases <- cases %>% mutate_if(is.character, factor)
+dim(cases)
 ```
+```{r}
+cases_high <- cases %>% filter(confirmed_cases > 300000)
+dim(cases_high)
+```
+```{r}
+summary(cases_high[,1:10])
+```
+```{r}
+ggplot(cases_high, mapping = aes(confirmed_cases)) + geom_histogram(bins = 10)
+```
+```{r}
+library(sampling)
+sampled_cases <- strata(cases, stratanames = "state", size = c(5), method = "srswor")
+sampled_cases
+```
+
+```{r}
+ggplot(data = cases) + 
+  geom_point(mapping = aes(x = confirmed_cases, y = deaths)) + 
+  facet_wrap(~ state, nrow = 6)
+```
+
 
